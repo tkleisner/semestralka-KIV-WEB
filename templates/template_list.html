@@ -1,0 +1,69 @@
+{% include 'header.html' %}
+  <h1>{{ listheader }}</h1>
+  <table class="table table-striped">
+  
+  {% if listheader ==  "Kapely" %}
+      <tr><th>Název</th><th>Styl</th><th>Město</th><th>Země</th></tr>
+    {% for data in tabledata %}
+      <tr><td>
+          {% if admin is defined %}
+          <a href="index.php?deleteBand={{ data.id_kapela }}" onclick="return confirm('Smazat kapelu?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </span></a>
+          {% endif %}
+          <a href="index.php?band={{ data.id_kapela }}">{{ data.nazev }}</a>
+          </td>
+          <td>{{ data.styl }}</td><td>{{ data.mesto }}</td><td>{{ data.zeme }}</td></tr>
+    {% else %}
+      <p>Žádné kapely v databázi</p>
+    {% endfor %}
+  
+  {% endif %}
+  
+  {% if listheader ==  "Uživatelé" %} 
+      <tr><th>Jméno</th></tr>
+    {% for data in tabledata %}
+      <tr><td><a href="index.php?user={{ data.id_uzivatel }}">{{ data.jmeno }}</a></td></tr>
+    {% else %}
+      <p>Žádný uživatel v databázi</p>
+    {% endfor %}
+  
+  {% endif %}
+  
+  {% if listheader ==  "Koncerty" %}
+      <tr><th>Název</th><th>Místo</th><th>Datum</th><th>Začátek</th><th>Vstup</th></tr>
+    {% for data in tabledata %}
+      <tr><td>
+          {% if admin is defined %}
+          <a href="index.php?deleteConcert={{ data.id_koncert }}" onclick="return confirm('Smazat koncert?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </span></a>
+          {% endif %}
+          <a href="index.php?concert={{ data.id_koncert }}">{{ data.nazev }}</a></td>
+          <td>{{ data.misto }}</td><td>{{ data.datum }}</td><td>{{ data.cas }}</td><td>{{ data.vstup }}</td></tr>
+    {% else %}
+      <p>Žádný koncert v databázi</p>
+    {% endfor %}
+  
+  {% endif %}
+      
+    {% if listheader ==  "Vyhledávání" %}
+        {% for data in tabledata %}
+        {% if data.id_kapela is defined %}
+                <tr><td><a href="index.php?band={{ data.id_kapela }}">{{ data.nazev }}</a></td><td>{{ data.styl }}</td><td>{{ data.mesto }}</td><td>{{ data.zeme }}</td><td></td></tr>
+        {% elseif data.id_uzivatel is defined %}
+            <tr><td><a href="index.php?user={{ data.id_uzivatel }}">{{ data.jmeno }}</a></td><td></td><td></td><td></td><td></td></tr>
+        {% elseif data.id_koncert is defined %}
+            <tr><td><a href="index.php?concert={{ data.id_koncert }}">{{ data.nazev }}</a></td><td>{{ data.misto }}</td><td>{{ data.datum }}</td><td>{{ data.cas }}</td><td>{{ data.vstup }}</td></tr>
+        
+        {% else %}
+            <p>Žádné výsledky</p>
+        {% endif %}
+        {% endfor %}
+  
+  {% endif %}
+  </table>
+
+<p>
+{{ previouspage | raw }} 
+    | stránka {{ pagecount }} |
+{{ nextpage | raw }}
+</p>
+      
+{% include 'footer.html' %}

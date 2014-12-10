@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="cs">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Kapely & Koncerty</title>
+
+    <!-- Bootstrap -->
+    <link href="templates/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Vlastni styl -->
+    <link href="templates/css/style.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <!-- TinyMCE -->
+    <script type="text/javascript" src="tinymce/tinymce.min.js"></script>
+      <script type="text/javascript">
+        tinymce.init({
+        selector: "textarea",
+        plugins: [
+            "advlist autolink lists link image charmap print preview anchor",
+            "searchreplace visualblocks code fullscreen",
+            "insertdatetime media table contextmenu paste"
+        ],
+
+         toolbar: "insertfile undo redo | styleselect | bold italic underline strikethrough | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image",
+
+        menubar: false,
+        });
+      </script>
+
+  </head>
+  <body>
+    <!-- menu -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="nav-logo" href="index.php"><img src="templates/img/logo.png" alt="Kapely & Koncerty"></a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav">
+            <li><a href="index.php?list=bands">Kapely</a></li>
+            <li><a href="index.php?list=concerts">Koncerty</a></li>
+            <li><a href="index.php?list=users">Uživatelé</a></li>
+          </ul>
+          
+          <!-- prihlaseni / uzivatelske menu -->
+          {% if user_menu == true %}
+          <ul class="nav navbar-nav navbar-right">
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+                <span class="glyphicon glyphicon-user" aria-hidden="true"> </span> {{ username }} <span class="caret"></span>
+              </a>
+              <ul class="dropdown-menu" role="menu">
+                <li><a href="index.php?user={{ userid }}"><span class="glyphicon glyphicon-user" aria-hidden="true"> </span> Můj profil</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#modalConfig"><span class="glyphicon glyphicon-cog" aria-hidden="true"> </span> Nastavení</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#modalAddConcert"><span class="glyphicon glyphicon-plus" aria-hidden="true"> </span> Přidat koncert</a></li>
+                <li><a href="#" data-toggle="modal" data-target="#modalAddBand"><span class="glyphicon glyphicon-plus" aria-hidden="true"> </span> Přidat kapelu</a></li>
+                <li class="divider"></li>
+                <li><a href="index.php?signout=1"><span class="glyphicon glyphicon-off" aria-hidden="true"></span> Odhlásit</a></li>
+              </ul>
+            </li>
+          </ul>
+          {% else %}
+          <div class="navbar-form navbar-right" role="form">
+            <button type="button" class="btn my-btn" data-toggle="modal" data-target="#modalSignin">Přihlásit</button>
+          </div> 
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#" data-toggle="modal" data-target="#modalSignup">Registrovat se</a></li>
+          </ul>
+          {% endif %}   
+        </div>
+      </div>
+    </nav>
+    
+  {% if user_menu == true %}
+  <!-- nastaveni -->
+  <div class="modal fade bs-example-modal-lg" id="modalConfig" tabindex="-1" role="dialog" aria-labelledby="modalConfig" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Nastavení</h4>
+        </div>
+        <div class="modal-body">
+            {% if my_concert_list is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-flag" aria-hidden="true"> </span> Moje koncerty
+                    <span class="caret"></span>
+                </button>
+            <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+            {% for item in my_concert_list %}
+                <li><a href="index.php?concert={{ item.id_koncert }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            </div>
+            {% endif %}
+            
+            {% if my_band_list is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-flag" aria-hidden="true"> </span> Moje kapely
+                    <span class="caret"></span>
+                </button>
+            <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+            {% for item in my_band_list %}
+                <li><a href="index.php?band={{ item.id_kapela }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            </div>
+            {% endif %}
+            
+            <hr>
+            
+            <h4>Změna osobních údajů</h4>
+            <form class="form-signin" role="form" method="post">
+                <input type="hidden" name="updateUser" value="1">
+                <h5>Můj e-mail:</h5>
+                <input type="text" class="form-control" name="email" value="{{ my_email }}" placeholder="E-mail" required>
+                <h5>Text na profilu: </h5>
+                <textarea name="text" id="concert">{{ my_text }}</textarea>
+                <button class="btn my-btn btn-margin" type="submit">Uložit</button>
+            </form>
+            
+            <hr>
+            
+            <h4>Změna hesla</h4>
+            <form class="form-signin" role="form" method="post">
+                <input type="hidden" name="updatePass" value="1">
+                <input type="password" class="form-control" name="pwd" placeholder="Staré heslo" required>
+                <input type="password" class="form-control" name="heslo" placeholder="Nové heslo" required>
+                <input type="password" class="form-control" name="hesloCheck" placeholder="Nové heslo znovu" required>
+                <button class="btn my-btn btn-margin" type="submit">Uložit</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- pridat kapelu -->
+  <div class="modal fade bs-example-modal-lg" id="modalAddBand" tabindex="-1" role="dialog" aria-labelledby="modalAddBand" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Přidat kapelu</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">
+          <input type="hidden" name="addBand" value="1">
+          <input type="text" name="nazev" class="form-control" placeholder="Název" required>
+          <input type="text" name="styl" class="form-control" placeholder="Styl" required>
+          <input type="text" name="zeme" class="form-control" placeholder="Země" required>
+          <input type="text" name="mesto" class="form-control" placeholder="Město" required>
+            <textarea name="text" id="band"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn my-btn" type="submit">Přidat</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  <!-- pridat koncert -->
+ <div class="modal fade bs-example-modal-lg" id="modalAddConcert" tabindex="-1" role="dialog" aria-labelledby="modalAddConcert" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Přidat koncert</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">
+          <input type="hidden" name="addConcert" value="1">
+          <input type="text" name="nazev" class="form-control" placeholder="Název" required>
+          <input type="date" name="datum" class="form-control" required>
+          <input type="time" name="cas" class="form-control" required>
+          <input type="text" name="misto" class="form-control" placeholder="Místo" required>
+          <input type="text" name="vstup" class="form-control" placeholder="Vstupné" required>
+            <textarea name="text" id="concert_add"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button class="btn my-btn" type="submit">Přidat</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>   
+  
+  {% else %}
+    
+  <!-- Přihlašovací okno -->
+  <div class="modal fade bs-example-modal-sm" id="modalSignin" tabindex="-1" role="dialog" aria-labelledby="modalSignin" aria-hidden="true">
+    <div class="modal-dialog modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Přihlášení</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">
+          <input type="hidden" name="signin" value="1">
+          <input type="text" name="nm" class="form-control" placeholder="Uživatelské jméno" required>
+          <input type="password" name="pwd" class="form-control" placeholder="Heslo" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-lg my-btn btn-block" type="submit">Přihlásit</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+    
+  <!-- registrační okno -->
+  <div class="modal fade bs-example-modal-lg" id="modalSignup" tabindex="-1" role="dialog" aria-labelledby="modalSignup" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Registrace</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">
+          <input type="hidden" name="signup" value="1">
+          <input type="text" name="nm" class="form-control" placeholder="Uživatelské jméno" required>
+          <input type="text" name="email" class="form-control" placeholder="E-mail" required>
+          <input type="password" name="pwd" class="form-control" placeholder="Heslo" required>
+          <input type="password" name="pwdr" class="form-control" placeholder="Heslo znovu" required>
+        </div>
+        <div class="modal-footer">
+          <button class="btn my-btn" type="submit">Registrovat</button>
+        </div>
+        </form>
+      </div>
+    </div>
+  </div>
+  
+  {% endif %}
+<!-- uprava kapely -->
+  {% if config_band is defined %}
+   <div class="modal fade bs-example-modal-lg" id="modalConfBand" tabindex="-1" role="dialog" aria-labelledby="modalConfBand" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Upravit kapelu</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">          
+          <input type="hidden" name="confBand" value="1">
+          <input type="hidden" name="id" value="{{ config_band.id_kapela }}">
+          <input type="text" name="nazev" class="form-control" placeholder="Název" value="{{ config_band.nazev }}" required>
+          <input type="text" name="styl" class="form-control" placeholder="Styl" value="{{ config_band.styl }}" required>
+          <input type="text" name="zeme" class="form-control" placeholder="Země" value="{{ config_band.zeme }}" required>
+          <input type="text" name="mesto" class="form-control" placeholder="Město" value="{{ config_band.mesto }}" required>
+            <textarea name="text" id="conf_band">{{ config_band.text }}</textarea>
+        <div class="modal-footer">
+          <button class="btn my-btn" type="submit">Uložit</button>
+        </div>
+        </form>
+        <hr>
+        <h4>Koncerty kapely {{ config_band.nazev }}</h4>
+        {% if concerts_list is defined %}
+            <ul>
+            {% for item in concerts_list %}
+            <li><a href="index.php?deleteBandC={{ config_band.id_kapela }}&concertId={{ item.id_koncert }}" onclick="return confirm('Opravdu chcete odebrat kapelu ze seznamu vystupujících?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </span> Odebrat</a> : <a href="index.php?concert={{ item.id_koncert }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>   
+  {% endif %}
+<!-- uprava koncertu -->
+  {% if config_concert is defined %}
+   <div class="modal fade bs-example-modal-lg" id="modalConfConcert" tabindex="-1" role="dialog" aria-labelledby="modalConfConcert" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Zavřít</span></button>
+          <h4 class="modal-title">Upravit koncert</h4>
+        </div>
+        <form class="form-signin" role="form" method="post">
+        <div class="modal-body">          
+          <input type="hidden" name="confConcert" value="1">
+          <input type="hidden" name="id" value="{{ config_concert.id_koncert }}">
+          <input type="text" name="nazev" class="form-control" placeholder="Název" value="{{ config_concert.nazev }}" required>
+          <input type="date" name="datum" class="form-control" value="{{ config_concert.datum }}" required>
+          <input type="time" name="cas" class="form-control" value="{{ config_concert.cas }}" required>
+          <input type="text" name="misto" class="form-control" placeholder="Místo" value="{{ config_concert.misto }}" required>
+          <input type="text" name="vstup" class="form-control" placeholder="Vstupné" value="{{ config_concert.vstup }}" required>
+            <textarea name="text" id="conf_concert">{{ config_concert.text }}</textarea>
+            <div class="modal-footer">
+                <button class="btn my-btn" type="submit">Uložit</button>
+            </div>
+         </form>
+         <hr>
+         <h4>Kapely</h4>
+         {% if bands_list is defined %}
+            <ul>
+            {% for item in bands_list %}
+            <li><a href="index.php?deleteBandC={{ item.id_kapela }}&concertId={{ config_concert.id_koncert }}" onclick="return confirm('Opravdu chcete odebrat kapelu ze seznamu vystupujících?');"><span class="glyphicon glyphicon-remove" aria-hidden="true"> </span> Odebrat</a> : <a href="index.php?band={{ item.id_kapela }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>   
+  {% endif %}
+      
+  
+  
+  <!-- jubmbotron -->
+  <div class="jumbotron my-jumbotron">
+    <div class="row">
+      <div class="col-md-8">
+        <a href="index.php"><img src="templates/img/logo-big.png" alt="Kapely & Koncerty"></a>
+      </div>
+      <div class="col-md-4">
+        <h4>Najít koncert, kapelu nebo uživatele</h4>
+        <form role="form" method="get">
+          <div class="input-group">
+            <span class="input-group-btn">
+              <button class="btn my-btn" type="submit"><span class="glyphicon glyphicon-search"></span></button>
+            </span>
+            <input type="text" name="search" class="form-control" placeholder="Vyhledat" required>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+      
+  <div class="container my-container">

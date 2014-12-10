@@ -1,0 +1,123 @@
+{% include 'header.html' %}
+      <div class="row">
+        <div class="col-md-4">
+          <img src="templates/img/{{ detail_image }}" alt="icon">
+        </div>
+        
+        <div class="col-md-5">
+          {{ headername | raw}}
+        </div>
+        
+        <div class="col-md-3">
+            {% if concert_list is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"> </span> Přidat kapelu na můj koncert
+                    <span class="caret"></span>
+                </button>
+            <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+            {% for item in concert_list %}
+                <li><a href="index.php?idConcert={{ item.id_koncert }}&idBand={{ id_band }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            </div>
+            {% endif %}
+            
+            {% if band_list is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"> </span> Přidat uživatele do mojí kapely
+                    <span class="caret"></span>
+                </button>
+            <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+            {% for item in band_list %}
+                <li><a href="index.php?idBand={{ item.id_kapela }}&idUser={{ id_user }}">{{ item.nazev }}</a></li>
+            {% endfor %}
+            </ul>
+            </div>
+            {% endif %}
+            
+            {% if config_band is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"> </span> Spravovat
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+                    <li><a href="#" data-toggle="modal" data-target="#modalConfBand">Upravit</a></li>
+                    <li class="divider"></li>
+                    <li><a href="index.php?leaveBand={{ config_band.id_kapela }}" onclick="return confirm('Opravdu chcete opustit kapelu?');">Opustit kapelu</a></li>
+                </ul>
+            </div>
+            {% endif %}
+            {% if config_concert is defined %}
+            <div class="btn-group">
+                <button class="btn my-btn btn-margin dropdown-toggle" data-toggle="dropdown">
+                    <span class="glyphicon glyphicon-cog" aria-hidden="true"> </span> Spravovat
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu btn-inverse" role="menu" aria-labelledby="dropdownMenu">
+                    <li><a href="#" data-toggle="modal" data-target="#modalConfConcert">Upravit</a></li>
+                    <li class="divider"></li>
+                    <li><a href="index.php?deleteConcert={{ config_concert.id_koncert }}" onclick="return confirm('Opravdu chcete smazat koncert?');">Smazat</a></li>
+                </ul>
+            </div>
+            {% endif %}
+        </div>  
+          
+        
+        </div>
+        
+        <hr>
+        
+        <div class="row">
+            <div class="col-md-9">
+                {{ detail_content.item1 | raw}}
+            </div>
+
+            <div class="col-md-3">
+                {% if concerts_list is defined %}
+                <h4>Koncerty:</h4>
+                <ul>
+                {% for item in concerts_list %}
+                    <li><a href="index.php?concert={{ item.id_koncert }}">{{ item.nazev }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+                
+                {% if member_list is defined %}
+                <h4>Členové:</h4>
+                <ul>
+                {% for item in member_list %}
+                    <li><a href="index.php?user={{ item.id_uzivatel }}">{{ item.jmeno }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+
+                
+                {% if bands_list is defined %}
+                <h4>Vystoupí:</h4>
+                <ul>
+                {% for item in bands_list %}
+                    <li><a href="index.php?band={{ item.id_kapela }}">{{ item.nazev }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}
+
+                {% if user_band_list is defined %}
+                <h4>Hraje v:</h4>
+                <ul>
+                {% for item in user_band_list %}
+                    <li><a href="index.php?band={{ item.id_kapela }}">{{ item.nazev }}</a></li>
+                {% endfor %}
+                </ul>
+                {% endif %}   
+            
+            </div>
+        </div>
+            
+        <div> {{ detail_content.item2 | raw}} </div>
+
+
+      
+{% include 'footer.html' %}

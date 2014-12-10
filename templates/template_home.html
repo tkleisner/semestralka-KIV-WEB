@@ -1,0 +1,42 @@
+{% include 'header.html' %}
+     <h1>{{ heading }}</h1>
+      {{ text | raw }}
+     
+      <div class="row">
+        <div class="col-md-4">
+          <h3>Nejnovější kapely</h3>
+          <table class="table table-striped">
+            {% for band in bands %}
+              <tr><td><a href="index.php?band={{ band.id_kapela }}">{{ band.nazev }}</a></td></tr>
+            {% else %}
+              <tr><td>Žádné kapely v databázi</td></tr>
+            {% endfor %}
+          </table>
+          <p><a class="btn btn-default my-btn" href="index.php?list=bands" role="button">Více &raquo;</a></p>
+        </div>
+        <div class="col-md-4">
+          <h3>Nadcházející koncerty</h3>
+          <table class="table table-striped">
+            {% for concert in concerts %}
+              <tr><td>{{ concert.datum }}</td><td><a href="index.php?concert={{ concert.id_koncert }}">{{ concert.nazev }}</a></td></tr>
+            {% else %}
+              <tr><td>Žádné nadcházející koncerty</td></tr>
+            {% endfor %}
+          </table>
+          <p><a class="btn btn-default my-btn" href="index.php?list=concerts" role="button">Více &raquo;</a></p>
+       </div>
+        <div class="col-md-4">
+          <h3>Uživatelé</h3>
+          <table class="table table-striped">
+            {% for user in users %}
+              <tr><td><a href="index.php?user={{ user.id_uzivatel }}">{{ user.jmeno }}</a></td></tr>
+            {% else %}
+              <tr><td>Žádní uživatelé v databázi</td></tr>
+            {% endfor %}
+          </table>
+          <p><a class="btn btn-default my-btn" href="index.php?list=users" role="button">Více &raquo;</a></p>
+        </div>
+      </div>
+
+      
+{% include 'footer.html' %}
